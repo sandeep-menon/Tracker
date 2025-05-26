@@ -1,6 +1,8 @@
 tracker-server/.env
 tracker-server/node_modules
 tracker-client/node_modules
+tracker-client/.env
+tracker-client/.env.production
 # Logs
 logs
 *.log
