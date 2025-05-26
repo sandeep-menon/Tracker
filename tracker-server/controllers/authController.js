@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Project from "../models/Project.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -61,5 +62,22 @@ export async function getUserById(req, res) {
         res.json(user);
     } catch (err) {
         res.status(500).json({ type: "error", message: err.message });
+    }
+}
+
+export async function createProject(req, res) {
+    const { name, description, tags, ownerId } = req.body;
+    try {
+        let projectWithName = await Project.findOne({ name });
+        if (projectWithName) {
+            return res.status(409).json({ type: "error", message: `Project ${name} already exists` });
+        }
+
+        const project = new Project({ name, description, tags, ownerId });
+        await project.save();
+
+        res.status(201).json({ type: "success", message: `Project ${name} created successfully` });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 }

@@ -1,4 +1,4 @@
-import { Briefcase, ChevronLeft, ChevronRight, Clapperboard, LayoutDashboard } from "lucide-react";
+import { ChevronLeft, ChevronRight, Construction, LayoutDashboard, Network } from "lucide-react";
 import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
@@ -11,8 +11,8 @@ interface AppSidebarProps {
 function AppSidebar({ sidebarOpen, updateSidebarOpen, navigate }: AppSidebarProps) {
     const sidebarItems = [
         { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
-        { name: "Projects", path: "/projects", icon: <Clapperboard className="h-4 w-4" /> },
-        { name: "My Work", path: "/assigned", icon: <Briefcase className="h-4 w-4" /> },
+        { name: "Projects", path: "/projects", icon: <Network className="h-4 w-4" /> },
+        { name: "Assigned", path: "/assigned", icon: <Construction className="h-4 w-4" /> },
     ];
 
     return (
@@ -34,7 +34,7 @@ function AppSidebar({ sidebarOpen, updateSidebarOpen, navigate }: AppSidebarProp
                       variant="ghost"
                       size="icon"
                       onClick={() => updateSidebarOpen(!sidebarOpen)}
-                      className="hidden md:flex"
+                      className="flex"
                     >
                       {sidebarOpen ?
                         <ChevronLeft className="h-4 w-4" /> :

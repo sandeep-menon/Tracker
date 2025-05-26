@@ -11,7 +11,7 @@ type UserState = {
 }
 
 type UserData = {
-    id: string;
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -28,7 +28,7 @@ export const useUserStore = create<UserState>()(
                 firstName: "",
                 lastName: "",
                 email: "",
-                id: ""
+                _id: ""
             },
             setUserData: (userData) => set({ userData })
         }),

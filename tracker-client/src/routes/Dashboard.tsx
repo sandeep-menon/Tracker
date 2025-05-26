@@ -6,6 +6,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useStatusStore } from "@/store/status";
+import LoremIpsum from "@/components/lorem-ipsum";
 
 interface DecodedToken {
   id: string;
@@ -112,6 +113,7 @@ function Dashboard() {
           )}
         </CardContent>
       </Card>
+      {/* <LoremIpsum /> */}
     </div>
   );
 }

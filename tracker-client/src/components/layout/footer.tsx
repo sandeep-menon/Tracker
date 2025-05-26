@@ -10,7 +10,7 @@ function AppFooter() {
                 <div className='text-gray-500 text-xs'>
                     {status}
                 </div>
-                <div className='text-gray-500 text-xs'>
+                <div className='text-gray-500 text-xs text-nowrap'>
                     <Timer />
                 </div>
             </div>
