@@ -1,7 +1,6 @@
 import { ModeToggle } from "./mode-toggle";
 import { User } from "lucide-react";
 import { Button } from "./ui/button";
-import { useAuth } from "@/AuthContext";
 import NavbarUserActions from "./navbar-user-actions";
 import { useUserStore } from "@/store/user";
 function Navbar() {

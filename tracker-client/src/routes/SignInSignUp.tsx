@@ -16,10 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { toast, useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useUserStore } from "@/store/user";
 
 function SignInSignUp() {
   const [email, setEmail] = useState("");
@@ -36,7 +35,7 @@ function SignInSignUp() {
 
   const login = async () => {
     try {
-      
+
       const res = await axios.post(`${api}/api/login`, {
         email,
         password,
@@ -73,6 +72,14 @@ function SignInSignUp() {
   };
 
   const register = async () => {
+    if (password !== retypePassword) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "Passwords do not match!",
+        variant: "destructive"
+      });
+      return;
+    }
     try {
       const res = await axios.post(`${api}/api/register`, {
         name,
@@ -82,11 +89,14 @@ function SignInSignUp() {
         password
       });
       // navigate("/login", { replace: true });
-      toast({
-        title: "Success!",
-        description: "User created successfully. Please login.",
-        variant: "info"
-      });
+      if (res.data.type === "success") {
+        toast({
+          title: "Success!",
+          description: "User created successfully. Please login.",
+          variant: "info"
+        });
+      }
+
     } catch (err) {
       if (err instanceof AxiosError) {
         const apiError = err.response?.data as APIError;
