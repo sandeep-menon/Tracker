@@ -23,7 +23,7 @@ interface JWTPayload {
 }
 
 interface UserData {
-    id: string;
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const setUserData = useUserStore((state) => state.setUserData);
     const navigate = useNavigate();
     const emptyUserData = {
-        id: "",
+        _id: "",
         firstName: "",
         lastName: "",
         email: ""
