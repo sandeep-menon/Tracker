@@ -1,17 +1,19 @@
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createContext, ReactNode, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "./hooks/use-toast";
 import axios from "axios";
+import { useUserStore } from "./store/user";
+import React from "react";
 
 interface AuthContextType {
     isLoggedIn: boolean;
     token: string | null;
-    setToken: (token: string | null) => void;
+    setToken: (token: string ) => void;
     setIsLoggedIn: (value: boolean) => void;
     logout: () => void;
-    getUserData: () => Promise<UserData | null>;
-    userData: UserData | null;
+    getUserData: () => Promise<UserData>;
+    userData: UserData;
 }
 
 interface JWTPayload {
@@ -29,15 +31,22 @@ interface UserData {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const api = import.meta.env.VITE_API_BASE_URL;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-        localStorage.getItem("isLoggedIn") === "true"
-    );
-    const [token, setToken] = useState<string | null>(
-        localStorage.getItem("token")
-    );
-    const [userData, setUserData] = useState<UserData | null>(null);
+    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+    const setIsLoggedIn = useUserStore((state) => state.setIsLoggedIn);
+    const token = useUserStore((state) => state.token);
+    const setToken = useUserStore((state) => state.setToken);
+    const userData = useUserStore((state) => state.userData);
+    const setUserData = useUserStore((state) => state.setUserData);
     const navigate = useNavigate();
+    const emptyUserData = {
+        id: "",
+        firstName: "",
+        lastName: "",
+        email: ""
+    }
 
     const isTokenExpired = (token: string | null): boolean => {
         if (!token) {
@@ -54,24 +63,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const handleSetToken = (newToken: string | null) => {
+    const handleSetToken = (newToken: string) => {
         setToken(newToken);
         setIsLoggedIn(!!newToken && !isTokenExpired(newToken));
         if (newToken) {
-            localStorage.setItem("token", newToken);
-            localStorage.setItem("isLoggedIn", "true");
-            // Fetch user data when setting new token
-            getUserData();
+            // localStorage.setItem("token", newToken);
+            // localStorage.setItem("isLoggedIn", "true");
+            getUserData(newToken).catch(() => {});
         } else {
-            localStorage.removeItem("token");
-            localStorage.removeItem("isLoggedIn");
-            localStorage.removeItem("userData");
-            setUserData(null);
+            // localStorage.removeItem("token");
+            // localStorage.removeItem("isLoggedIn");
+            // localStorage.removeItem("userData");
+            setUserData(emptyUserData);
         }
-    }
+    };
 
     const logout = (expired = false) => {
-        handleSetToken(null);
+        setIsLoggedIn(false);
+        handleSetToken("");
         if (typeof (expired) === 'boolean' && expired) {
             toast({
                 title: "Session expired",
@@ -82,15 +91,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         navigate("/login");
     }
 
-    const getUserData = async (): Promise<UserData | null> => {
-        if (!token) return null;
+    const getUserData = async (token: string): Promise<UserData> => {
+        if (!token) throw new Error("No token available");
 
         try {
             // First try to decode the JWT to get the user ID
             const decoded = jwtDecode<JWTPayload>(token);
             
             // Make API call to get user data
-            const response = await axios.get(`http://localhost:5000/api/user`, {
+            const response = await axios.get(`${api}/api/user`, {
                 headers: {
                     'x-auth-token': token
                 },
@@ -101,14 +110,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             const userData: UserData = response.data;
             setUserData(userData);
-            localStorage.setItem("userData", JSON.stringify(userData));
+            // localStorage.setItem("userData", JSON.stringify(userData));
             return userData;
         } catch (err) {
             console.error("Error fetching user data:", err);
             if (axios.isAxiosError(err) && err.response?.status === 401) {
                 logout(true);
             }
-            return null;
+            throw err;
         }
     }
 
@@ -116,7 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (token && isTokenExpired(token)) {
             logout(true);
         } else if (token && !userData) {
-            getUserData();
+            getUserData(token).catch(() => {});
         }
     }, [token]);
 
@@ -127,7 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setToken: handleSetToken,
             setIsLoggedIn,
             logout,
-            getUserData,
+            getUserData: () => getUserData(token),
             userData
         }}>
             {children}
@@ -136,9 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 }
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
-    return context;
+    const ctx = React.useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+    return ctx;
 }

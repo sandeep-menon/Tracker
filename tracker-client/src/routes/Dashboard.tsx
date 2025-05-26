@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useStatusStore } from "@/store/status";
 
 interface DecodedToken {
   id: string;
@@ -21,6 +23,8 @@ function Dashboard() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const api = import.meta.env.VITE_API_BASE_URL;
+  const setStatus = useStatusStore((state) => state.setStatus);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +35,7 @@ function Dashboard() {
 
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        const res = await axios("http://localhost:5000/api/user", {
+        const res = await axios(`${api}/api/user`, {
           headers: {
             "x-auth-token": token
           }, 
@@ -77,8 +81,16 @@ function Dashboard() {
     );
   }
 
+  const handleClick = () => {
+    setStatus("Fetching data...");
+    setTimeout(function() {
+      setStatus("Ready");
+    },5000);
+  }
+
   return (
-    <div className="p-6">
+    <div className="">
+      
       <Card>
         <CardHeader>
           <CardTitle>Welcome {userData?.lastName}, {userData?.firstName}!</CardTitle>
@@ -93,14 +105,13 @@ function Dashboard() {
                   {/* Display other user data as needed */}
                 </div>
               )}
+              <Button onClick={handleClick}>Get User Id</Button>
             </div>
           ) : (
             <p>Please log in to view dashboard content.</p>
           )}
         </CardContent>
       </Card>
-
-      {/* Rest of your dashboard content */}
     </div>
   );
 }

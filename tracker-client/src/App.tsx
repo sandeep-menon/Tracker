@@ -7,35 +7,77 @@ import Dashboard from "./routes/Dashboard";
 import { Toaster } from "./components/ui/toaster";
 import { AuthProvider } from "./AuthContext";
 import { ProtectedRoute } from "./ProtectedRoute";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import Layout from "./components/layout/Layout";
+import { useUserStore } from "./store/user";
+import Projects from "./routes/Projects";
+import Assigned from "./routes/Assigned";
+const queryClient = new QueryClient();
 
 function App() {
+
   return (
     <Router>
       <AuthProvider>
-        <MainContent />
+        <QueryClientProvider client={queryClient}>
+          <MainContent />
+        </QueryClientProvider>
       </AuthProvider>
     </Router>
   );
 }
 function MainContent() {
+  const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+
   return (
     <>
       <header className="sticky top-0 z-50">
         <Navbar />
       </header>
-      <main className="flex mx-auto justify-center items-center max-w-screen-lg p-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<SignInSignUp />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+      <main className="">
+        {isLoggedIn ? (
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<SignInSignUp />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <ProtectedRoute>
+                    <Projects />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/assigned"
+                element={
+                  <ProtectedRoute>
+                    <Assigned />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Layout>
+        ) : (
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<SignInSignUp />} />
+          </Routes>
+        )}
+
+
+
       </main>
       <Toaster />
     </>

@@ -8,17 +8,17 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { useAuth } from "@/AuthContext";
 
 function NavbarUserActions() {
-    const { logout, userData } = useAuth();
-    const handleLogout = () => {
-        logout();
-    }
+  const { logout, userData } = useAuth();
+  const handleLogout = () => {
+    logout();
+  }
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <Avatar className="hover:cursor-pointer">
-              <AvatarFallback>{userData?.firstName[0].toUpperCase()}{userData?.lastName[0].toUpperCase()}</AvatarFallback>
-            </Avatar>
+          <Avatar className="hover:cursor-pointer">
+            <AvatarFallback>{userData?.firstName[0]?.toUpperCase()}{userData?.lastName[0]?.toUpperCase()}</AvatarFallback>
+          </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem className="hover:cursor-pointer">

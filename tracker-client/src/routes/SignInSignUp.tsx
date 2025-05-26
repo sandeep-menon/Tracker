@@ -19,6 +19,7 @@ import { useState } from "react";
 import { toast, useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUserStore } from "@/store/user";
 
 function SignInSignUp() {
   const [email, setEmail] = useState("");
@@ -31,10 +32,12 @@ function SignInSignUp() {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/dashboard";
+  const api = import.meta.env.VITE_API_BASE_URL;
 
   const login = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/login", {
+      
+      const res = await axios.post(`${api}/api/login`, {
         email,
         password,
       });
@@ -71,10 +74,10 @@ function SignInSignUp() {
 
   const register = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/register", {
+      const res = await axios.post(`${api}/api/register`, {
         name,
-        firstName, 
-        lastName, 
+        firstName,
+        lastName,
         email,
         password
       });
@@ -114,94 +117,97 @@ function SignInSignUp() {
   }
 
   return (
-    <Tabs defaultValue="login" className="w-[400px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="signup">Sign Up</TabsTrigger>
-        <TabsTrigger value="login">Login</TabsTrigger>
-      </TabsList>
-      <TabsContent value="signup">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sign Up</CardTitle>
-            <CardDescription>
-              Register as a user for Tracker. Click on Register button when
-              finished.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="space-y-1">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" placeholder="john.doe" onChange={(e) => setName(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="firstname">First name</Label>
-              <Input id="firstname" placeholder="John" onChange={(e) => setFirstName(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="lastname">Last name</Label>
-              <Input id="lastname" placeholder="Doe" onChange={(e) => setLastName(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="john.doe@example.com" onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="a strong password..."
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="passwordretype">Retype password</Label>
-              <Input
-                id="passwordretype"
-                type="password"
-                placeholder="retype strong password..."
-                onChange={(e) => setRetypePassword(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button onClick={register}>Register</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
-      <TabsContent value="login">
-        <Card>
-          <CardHeader>
-            <CardTitle>Log in</CardTitle>
-            <CardDescription>
-              Enter your registered email and password to log in.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                placeholder="john.doe@example.com"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="your secret password..."
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-center">
-            <Button onClick={login}>Login</Button>
-          </CardFooter>
-        </Card>
-      </TabsContent>
-    </Tabs>
+    <div className="flex justify-center items-center p-4">
+      <Tabs defaultValue="login" className="w-[400px]">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          <TabsTrigger value="login">Login</TabsTrigger>
+        </TabsList>
+        <TabsContent value="signup">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sign Up</CardTitle>
+              <CardDescription>
+                Register as a user for Tracker. Click on Register button when
+                finished.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="username">Username</Label>
+                <Input id="username" placeholder="john.doe" onChange={(e) => setName(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="firstname">First name</Label>
+                <Input id="firstname" placeholder="John" onChange={(e) => setFirstName(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="lastname">Last name</Label>
+                <Input id="lastname" placeholder="Doe" onChange={(e) => setLastName(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" placeholder="john.doe@example.com" onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="a strong password..."
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="passwordretype">Retype password</Label>
+                <Input
+                  id="passwordretype"
+                  type="password"
+                  placeholder="retype strong password..."
+                  onChange={(e) => setRetypePassword(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={register}>Register</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        <TabsContent value="login">
+          <Card>
+            <CardHeader>
+              <CardTitle>Log in</CardTitle>
+              <CardDescription>
+                Enter your registered email and password to log in.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="john.doe@example.com"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="your secret password..."
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+              <Button onClick={login}>Login</Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+
   );
 }
 
